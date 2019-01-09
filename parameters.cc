@@ -1,7 +1,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <cctype>
-#include "parameters.hh"
+#include "classes.hh"
 
 ostream &print(ostream &os, const Parameters &p) {
   // print out the parameters
