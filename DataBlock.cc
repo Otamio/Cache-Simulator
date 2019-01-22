@@ -17,8 +17,13 @@ void DataBlock::show() {
 // Replace the DataBlock by the new datablock
 void DataBlock::replace(DataBlock &block) {
   // Confirming the two datablocks have the same size
-  if (this->size != block.size)
-    throw "Unmatched block size when updating the block (code: 002).\n";
+  // if (this->size != block.size)
 
+  if (this->size != block.size) {
+    cerr << "Old size " << this->size << " New size " << block.size << "." << endl;
+    throw runtime_error("Error: Dimension Unmatch when updating the block (Code: 002).");
+  }
+
+  this->size = block.size;
   this->data = block.data;
 }

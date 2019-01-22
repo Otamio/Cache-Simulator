@@ -1,6 +1,5 @@
 #define ADDRESS_LEN 32
 #define WORD_SIZE 8
-#define TEST_SIZE 100
 
 #include <cstdint>
 #include <iostream>

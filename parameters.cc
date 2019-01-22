@@ -16,7 +16,10 @@ ostream &print(ostream &os, const Parameters &p) {
   os << "Associativity = \t\t" << p.n_map << '\n';
   os << "Number of Sets = \t\t" << p.n_sets << '\n';
   os << "Replacement Policy = \t\t" << p.replacement_policy << '\n';
-  os << "Algorithm = \t\t\t" << p.algorithm << '\n';
+  if (p.algorithm == "mxm_block")
+    os << "Algorithm = \t\t\t" << "blocked mxm" << '\n';
+  else
+    os << "Algorithm = \t\t\t" << p.algorithm << '\n';
   os << "MXM Blocking Factor =\t\t" << p.blocking_factor << '\n';
   os << "Matrix or Vector Dimension = \t" << p.dimension << '\n';
   os << flush;
@@ -67,10 +70,15 @@ Parameters::Parameters(int argc, char *argv[]) {
         break;
     // end of switch
     }
-  // Infer the number of sets from given
-  n_sets = cache_size / block_size / n_map;
   // end of while (commandline arguments)
   }
+  // Infer the number of sets from given
+  n_sets = cache_size / block_size / n_map;
+
+  if (algorithm == "daxpy")
+    ram_size = dimension * WORD_SIZE * 3;
+  else
+    ram_size = dimension * dimension * WORD_SIZE * 3;
 }
 
 /* Print out the results to stdout */

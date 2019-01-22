@@ -31,7 +31,7 @@ Cache::Cache(Parameters &p, Rule *r, Ram *rm, Result *resu) {
   } else if (p.getReplacePolicy() == "random")
     replacement_rule = 2;
   else
-    throw "Unknown replacement policy (Code: 003).\n";
+    throw string("Unknown replacement policy (Code: 003).\n");
 
   // Pass pointer to the constructor
   rule = r;
@@ -73,7 +73,7 @@ void Cache::setDouble(Address address, double value) {
   DataBlock &target = this->findBlock(address, true);
   // Get the in-block index
   unsigned offset = this->rule->getBlockOffset(address);
-  
+
   // Update the value in the cache
   target.set(offset, value);
   // Also update the value in the ram
@@ -186,7 +186,7 @@ DataBlock &Cache::replaceBlock(Address address) {
   else if (this->replacement_rule == 0)
     block_id = this->lru_queue.pop(set_id);
   else
-    throw "Unknow Replacement Method (Code: 003).\n";
+    throw string("Unknow Replacement Method (Code: 003).\n");
 
   // Update the block
   this->blocks[set_id][block_id].replace(newblock);

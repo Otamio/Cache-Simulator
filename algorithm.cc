@@ -25,7 +25,7 @@ void Algorithms::enter(Parameters &params) {
   else if (params.getAlgorithm() == "daxpy")
     this->daxpy(params);
   else
-    throw "Unknow Algorithm (Code: 001). Abort.\n";
+    throw string("Unknow Algorithm (Code: 001). Abort.\n");
 }
 
 void Algorithms::daxpy(Parameters &params) {
@@ -104,7 +104,7 @@ void Algorithms::mxmMult(Parameters &params) {
   /* Determine the test size */
   const unsigned test_size = this->testsize;
 
-  // Initialize the addresses
+  /* Initialize the addresses (as continuous) */
   unsigned ct = 0;
   vector<Address> a(test_size*test_size);
   vector<Address> b(test_size*test_size);
@@ -130,6 +130,7 @@ void Algorithms::mxmMult(Parameters &params) {
   for (auto it=c.begin(); it!=c.end(); ++it)
     myCpu.storeDouble(*it, 0);
 
+  // Reset the counting to 0
   myCpu.reset();
 
   Register r0, r1, r2, r3;
@@ -185,7 +186,7 @@ void Algorithms::mxmMultBlock(Parameters &params) {
   /* Determine the test size */
   const unsigned test_size = this->testsize;
 
-  // Initialize the addresses
+  /* Initialize the addresses (as continuous) */
   unsigned ct = 0;
   vector<Address> a(test_size*test_size);
   vector<Address> b(test_size*test_size);
@@ -199,14 +200,10 @@ void Algorithms::mxmMultBlock(Parameters &params) {
   for (auto &add : c)
     add = ct++ * WORD_SIZE;
 
-  // cout << "Pass(0)" << endl;
-
   // Initialize some dummy values
   unsigned i = 0;
   for (auto it=a.begin(); it!=a.end(); ++it)
     myCpu.storeDouble(*it, i++);
-
-  // cout << "Pass(1)" << endl;
 
   i = 0;
   for (auto it=b.begin(); it!=b.end(); ++it)
@@ -215,8 +212,10 @@ void Algorithms::mxmMultBlock(Parameters &params) {
   for (auto it=c.begin(); it!=c.end(); ++it)
     myCpu.storeDouble(*it, 0);
 
+  // Reset the counting to 0
   myCpu.reset();
 
+  // Generate
   Register r0, r1, r2, r3;
 
   // Start iterating

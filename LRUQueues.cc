@@ -42,11 +42,11 @@ void BlockLRU::update(unsigned set_id, unsigned block_id) {
   this->maps[set_id].erase(map_it);
   // Reinsert to the beginning of list, and add to map
   this->lists[set_id].push_front(block_id);
-  this->maps[set_id].insert({block_id, this->lists[set_id].begin()});
+  this->maps[set_id].insert(make_pair(block_id, this->lists[set_id].begin()));
 }
 
 void BlockLRU::push(unsigned set_id, unsigned block_id) {
   // Push to list
   this->lists[set_id].push_front(block_id);
-  this->maps[set_id].insert({block_id, this->lists[set_id].begin()});
+  this->maps[set_id].insert(make_pair(block_id, this->lists[set_id].begin()));
 }

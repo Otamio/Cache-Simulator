@@ -6,7 +6,7 @@ Ram::Ram(Parameters &p, Rule *r) {
   numBlocks = p.getRamSize() / p.getBlockSize();
   // build the DataBlock and insert it into data
   DataBlock d(p);
-  vector<DataBlock> tmp(numBlocks, d);
+  vector<DataBlock> tmp(numBlocks+1, d); // Use upper ceiling
   data.insert(data.end(), tmp.begin(), tmp.end());
   // Pass pointer of rule to the constructor
   rule = r;
@@ -33,6 +33,11 @@ void Ram::summary() {
 DataBlock &Ram::getBlock(Address address) {
   unsigned BlockIndex = this->rule->getBlockIndexRAM(address);
   // cout << "Block id:" << BlockIndex << " " << address%512 << endl;
+  if (BlockIndex >= numBlocks+1) {
+    cerr << "Error: Block Index: " << BlockIndex << " numBlocks: " << numBlocks << endl;
+    throw runtime_error("Block Index out of Range (Code: 004).");
+  }
+
   return this->data[BlockIndex];
 }
 
