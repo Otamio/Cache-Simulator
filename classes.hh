@@ -30,6 +30,8 @@ struct Algorithms {
   void daxpy(Parameters &params); // Daxpy algorithm
   void mxmMult(Parameters &params); // mxmMult algorithm
   void mxmMultBlock(Parameters &params); // mxmMultBlock algorithm
+  void doBlock(CPU &myCpu, const unsigned test_size, const unsigned blocking_factor,
+    unsigned si, unsigned sj, unsigned sk, vector<Address> &a, vector<Address> &b, vector<Address> &c);
 private:
   unsigned testsize;
   Rule *rule;
@@ -52,6 +54,7 @@ public:
   inline unsigned getSetCount() const { return this->n_sets; }
   inline unsigned getSetSize() const { return this->n_map; }
   inline unsigned getTestSize() const { return this->dimension; }
+  inline unsigned getBlockingFactor() const { return this->blocking_factor; }
   inline bool printOutput() const { return this->output; }
   inline string &getReplacePolicy() { return this->replacement_policy; }
   inline string &getAlgorithm() { return this->algorithm; }
@@ -150,13 +153,14 @@ class DataBlock {
 public:
   DataBlock(Parameters &p);
   void show(); // debugging only
+  inline unsigned getBlockSize() { return this->size; }
 private:
   unsigned size;
   vector<double> data;
   // Restricted function that can only be accessed by cache and ram
   void replace(DataBlock &block);
-  inline double get(unsigned block_offset) const { return this->data[block_offset]; }
-  inline void set(unsigned block_offset, double val) { this->data[block_offset] = val; }
+  inline double get(unsigned block_offset) const { return this->data[block_offset/WORD_SIZE]; }
+  inline void set(unsigned block_offset, double val) { this->data[block_offset/WORD_SIZE] = val; }
 };
 
 /* Class Ram */

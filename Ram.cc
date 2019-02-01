@@ -16,9 +16,9 @@ Ram::Ram(Parameters &p, Rule *r) {
 void Ram::show() {
   unsigned ct = 0;
   for (auto &block : this->data) {
-    cout << "block " << ct++ << " : ";
+    cout << "block " << ct++ << " (size:" << block.getBlockSize() << "):";
     block.show();
-    if (ct >= 100) break;
+    // if (ct >= 100) break;
   }
   cout << endl;
 }
@@ -32,7 +32,8 @@ void Ram::summary() {
 /* Obtain a block by giving an address */
 DataBlock &Ram::getBlock(Address address) {
   unsigned BlockIndex = this->rule->getBlockIndexRAM(address);
-  // cout << "Block id:" << BlockIndex << " " << address%512 << endl;
+
+  // cout << "Block id:" << BlockIndex << " Address: " << address << endl;
   if (BlockIndex >= numBlocks+1) {
     cerr << "Error: Block Index: " << BlockIndex << " numBlocks: " << numBlocks << endl;
     throw runtime_error("Block Index out of Range (Code: 004).");
@@ -44,5 +45,6 @@ DataBlock &Ram::getBlock(Address address) {
 void Ram::setBlock(Address address, DataBlock &block) {
   unsigned BlockIndex = this->rule->getBlockIndexRAM(address);
 
+  // cout << "Address " << address << " Block size " << this->data[BlockIndex].getBlockSize() << endl;
   this->data[BlockIndex].replace(block);
 }

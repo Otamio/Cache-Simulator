@@ -181,13 +181,16 @@ DataBlock &Cache::replaceBlock(Address address) {
   // Determine the block to replace
   if (this->replacement_rule == 2)
     block_id = this->replaceRandom();
-  else if (this->replacement_rule == 1)
+  else if (this->replacement_rule == 1) {
     block_id = this->queue.pop(set_id);
-  else if (this->replacement_rule == 0)
+    this->queue.push(set_id, block_id);
+  } else if (this->replacement_rule == 0) {
     block_id = this->lru_queue.pop(set_id);
-  else
+    this->lru_queue.push(set_id, block_id);
+  } else
     throw string("Unknow Replacement Method (Code: 003).\n");
 
+  // cout << set_id << " " << block_id << " " << this->blocks[set_id][block_id].getBlockSize() << endl;
   // Update the block
   this->blocks[set_id][block_id].replace(newblock);
   this->tags[set_id][block_id] = this->rule->getTag(address);

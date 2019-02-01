@@ -2,7 +2,7 @@
 
 // Initialize a DataBlock instance
 DataBlock::DataBlock(Parameters &p) {
-  size = p.getBlockSize();
+  size = p.getBlockSize()/WORD_SIZE;
   vector<double> tmp(size, 0);
   data.insert(data.end(), tmp.begin(), tmp.end());
 }

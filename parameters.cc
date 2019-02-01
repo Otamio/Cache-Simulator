@@ -16,12 +16,17 @@ ostream &print(ostream &os, const Parameters &p) {
   os << "Associativity = \t\t" << p.n_map << '\n';
   os << "Number of Sets = \t\t" << p.n_sets << '\n';
   os << "Replacement Policy = \t\t" << p.replacement_policy << '\n';
-  if (p.algorithm == "mxm_block")
+  if (p.algorithm == "mxm_block") {
     os << "Algorithm = \t\t\t" << "blocked mxm" << '\n';
-  else
+    os << "MXM Blocking Factor =\t\t" << p.blocking_factor << '\n';
+    os << "Matrix Dimension = \t\t" << p.dimension << '\n';
+  } else if (p.algorithm == "mxm"){
     os << "Algorithm = \t\t\t" << p.algorithm << '\n';
-  os << "MXM Blocking Factor =\t\t" << p.blocking_factor << '\n';
-  os << "Matrix or Vector Dimension = \t" << p.dimension << '\n';
+    os << "Matrix Dimension = \t\t" << p.dimension << '\n';
+  } else {
+    os << "Algorithm = \t\t\t" << p.algorithm << '\n';
+    os << "Vector Dimension = \t\t" << p.dimension << '\n';
+  }
   os << flush;
 
   return os;
