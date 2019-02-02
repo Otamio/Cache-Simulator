@@ -32,7 +32,7 @@ public:
   void show();
 private:
   vector<deque<unsigned>> queues;
-  unsigned numSets;
+  unsigned numSets = 0;
 };
 
 /* BlockLRU is a list of set queues (of block numbers), with unordered_map for fast indexing
@@ -64,5 +64,5 @@ public:
 private:
   vector<list<unsigned>> lists;
   vector<unordered_map<unsigned, list<unsigned>::iterator>> maps;
-  unsigned numSets;
+  unsigned numSets = 0;
 };

@@ -1,21 +1,12 @@
+/* ./src/Rule.cc
+ *
+ *  class Rule represents the addressing rule of the ISA.
+ */
+
 #include <iostream>
 #include "classes.hh"
 
 using namespace::std;
-
-// Address::Address(unsigned block_size, unsigned cache_size) {
-//   // Increment  offset_size
-//   for ( ; block_size & 0x1; block_size = block_size >> 1)
-//     ++offset_size;
-//   // Increment index_size
-//   unsigned bucs = cache_size / block_size;
-//   for ( ; bucs & 0x1; bucs = bucs >> 1)
-//     ++index_size;
-//
-//   tag_size = ADDRESS_LEN - offset_size - index_size;
-//
-//   return add;
-// }
 
 /* Initialize the addressing rule from the parameters */
 Rule::Rule(Parameters &p) {
@@ -28,7 +19,7 @@ Rule::Rule(Parameters &p) {
   tag_len = ADDRESS_LEN - offset_len - index_len;
 }
 
-/* Get bit-length of a value */
+/* Private member function: Get bit-length of a value */
 unsigned Rule::getBit(unsigned val) {
 
   unsigned ret = 0;
@@ -40,9 +31,6 @@ unsigned Rule::getBit(unsigned val) {
 
 /* Print out the addressing rule */
 ostream &print(ostream &os, const Rule &rule) {
-  // os << "=======================================\n";
-  // os << "Address: " << address.address << "\n";
-  // os << "=======================================\n";
   os << "###### Address Rule ######\n";
   os << "Block size: " << rule.block_size << " bytes\n";
   os << "Set size: " << rule.set_size << " bins\n";

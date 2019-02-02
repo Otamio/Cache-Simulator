@@ -1,12 +1,20 @@
+/* ./src/Ram.cc
+ *
+ *  class Ram is represented as a vector of DataBlocks.
+ *  class Cache has direct control on class Ram.
+ */
 #include "classes.hh"
 
 /* Initialize the Ram with the parameters */
 Ram::Ram(Parameters &p, Rule *r) {
-  // calculate the number of blocks
-  numBlocks = p.getRamSize() / p.getBlockSize();
+  // calculate the number of blocks, use upper ceiling to padding
+  if (p.getRamSize() % p.getBlockSize() == 0)
+    numBlocks = p.getRamSize() / p.getBlockSize();
+  else
+    numBlocks = p.getRamSize() / p.getBlockSize() + 1;
   // build the DataBlock and insert it into data
   DataBlock d(p);
-  vector<DataBlock> tmp(numBlocks+1, d); // Use upper ceiling
+  vector<DataBlock> tmp(numBlocks, d);
   data.insert(data.end(), tmp.begin(), tmp.end());
   // Pass pointer of rule to the constructor
   rule = r;
@@ -18,7 +26,6 @@ void Ram::show() {
   for (auto &block : this->data) {
     cout << "block " << ct++ << " (size:" << block.getBlockSize() << "):";
     block.show();
-    // if (ct >= 100) break;
   }
   cout << endl;
 }
@@ -33,7 +40,6 @@ void Ram::summary() {
 DataBlock &Ram::getBlock(Address address) {
   unsigned BlockIndex = this->rule->getBlockIndexRAM(address);
 
-  // cout << "Block id:" << BlockIndex << " Address: " << address << endl;
   if (BlockIndex >= numBlocks+1) {
     cerr << "Error: Block Index: " << BlockIndex << " numBlocks: " << numBlocks << endl;
     throw runtime_error("Block Index out of Range (Code: 004).");
@@ -42,9 +48,9 @@ DataBlock &Ram::getBlock(Address address) {
   return this->data[BlockIndex];
 }
 
+/* Replace the block at the given address, with the given block reference */
 void Ram::setBlock(Address address, DataBlock &block) {
   unsigned BlockIndex = this->rule->getBlockIndexRAM(address);
 
-  // cout << "Address " << address << " Block size " << this->data[BlockIndex].getBlockSize() << endl;
   this->data[BlockIndex].replace(block);
 }

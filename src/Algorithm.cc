@@ -1,6 +1,11 @@
+/* ./src/Algorithm.cc
+ *
+ *  class Algorithm contains all the algorithm for this assignment.
+ */
+
 #include "classes.hh"
 
-/* Algorithm Start Function */
+/* Start Function */
 void Algorithms::enter(Parameters &params) {
   /* Print the parameters to stdout */
   print(cout, params);
@@ -28,6 +33,7 @@ void Algorithms::enter(Parameters &params) {
     throw string("Unknow Algorithm (Code: 001). Abort.\n");
 }
 
+/* Algorithm daxpy */
 void Algorithms::daxpy(Parameters &params) {
   /* Assemble my CPU */
   CPU myCpu(this->cache, this->result);
@@ -58,11 +64,9 @@ void Algorithms::daxpy(Parameters &params) {
   for (auto it=c.begin(); it!=c.end(); ++it)
     myCpu.storeDouble(*it, 0);
 
-  // runtime inspecter
-  // this->ram->show();
-
-  /* Reset the CPU to restart counting */
-  myCpu.reset();
+  /* Reset the CPU to restart counting (with -s flag) */
+  if (params.resetResult())
+    myCpu.reset();
 
   // Put a random 'D' into a register
   Register r0 = 3, r1, r2, r3, r4;
@@ -79,7 +83,7 @@ void Algorithms::daxpy(Parameters &params) {
   // Print out the result
   print(cout, *(this->result));
 
-  // Correctness check
+  /* Correctness check (with -p flag) */
   if (params.printOutput()) {
     cout << "##############################################\n";
     cout << "-Daxpy- Correctness Check, Multiplier D=" << r0 << "\n";
@@ -98,6 +102,7 @@ void Algorithms::daxpy(Parameters &params) {
   return;
 }
 
+/* Algorithm mxmMult */
 void Algorithms::mxmMult(Parameters &params) {
   /* Assemble my CPU */
   CPU myCpu(this->cache, this->result);
@@ -110,9 +115,6 @@ void Algorithms::mxmMult(Parameters &params) {
   vector<Address> b(test_size*test_size);
   vector<Address> c(test_size*test_size);
 
-  // runtime inspecter
-  // this->ram->show();
-
   // Assigning addresses
   for (auto &add : a)
     add = ct++ * WORD_SIZE;
@@ -121,7 +123,6 @@ void Algorithms::mxmMult(Parameters &params) {
   for (auto &add : c)
     add = ct++ * WORD_SIZE;
 
-  // cout << "start" << endl;
 
   // Initialize some dummy values
   unsigned i = 0;
@@ -135,10 +136,9 @@ void Algorithms::mxmMult(Parameters &params) {
   for (auto it=c.begin(); it!=c.end(); ++it)
     myCpu.storeDouble(*it, 0);
 
-  // cout << "fill" << endl;
-
-  // Reset the counting to 0
-  myCpu.reset();
+  /* Reset the CPU to restart counting (with -s flag) */
+  if (params.resetResult())
+    myCpu.reset();
 
   Register r0, r1, r2, r3;
 
@@ -161,7 +161,7 @@ void Algorithms::mxmMult(Parameters &params) {
 
   print(cout, *(this->result));
 
-  // Correctness check
+  /* Correctness check (with -p flag) */
   if (params.printOutput()) {
     cout << "##############################################\n";
     cout << "-mxm- Correctness Check\n";
@@ -191,6 +191,7 @@ void Algorithms::mxmMult(Parameters &params) {
   return;
 }
 
+/* Algorithm mxmMultBlock */
 void Algorithms::mxmMultBlock(Parameters &params) {
   /* Assemble my CPU */
   CPU myCpu(this->cache, this->result);
@@ -224,25 +225,10 @@ void Algorithms::mxmMultBlock(Parameters &params) {
   for (auto it=c.begin(); it!=c.end(); ++it)
     myCpu.storeDouble(*it, 0);
 
-  // Reset the counting to 0
-  myCpu.reset();
+  /* Reset the CPU to restart counting (with -s flag) */
+  if (params.resetResult())
+    myCpu.reset();
 
-  // Generate
-  // Register r0, r1, r2, r3;
-
-  // Start iterating (Blocked method)
-  // for (auto row=0; row!=test_size; ++row) {
-  //   for (auto col=0; col!=test_size; ++col) {
-  //     r0 = 0; // r0 is the accumulator;
-  //     for (auto k=0; k!=test_size; ++k) {
-  //       r1 = myCpu.loadDouble(a[row*test_size + k]);
-  //       r2 = myCpu.loadDouble(b[k*test_size + col]);
-  //       r3 = myCpu.multDouble(r1, r2);
-  //       r0 = myCpu.addDouble(r0, r3);
-  //     }
-  //     myCpu.storeDouble(c[row*test_size+col], r0);
-  //   }
-  // }
   for (unsigned sj=0; sj<test_size; sj += blocking_factor)
     for (unsigned si=0; si<test_size; si += blocking_factor)
       for (unsigned sk=0; sk<test_size; sk += blocking_factor) {
@@ -252,7 +238,7 @@ void Algorithms::mxmMultBlock(Parameters &params) {
 
   print(cout, *(this->result));
 
-  // Correctness check
+  /* Correctness check (with -p flag) */
   if (params.printOutput()) {
     cout << "##############################################\n";
     cout << "-Blocked mxm- Correctness Check\n";
@@ -289,25 +275,13 @@ void Algorithms::doBlock(CPU &myCpu, const unsigned test_size, const unsigned bl
     Register r0, r1, r2, r3;
     for (unsigned i=si; i<si+blocking_factor && i<this->testsize; ++i)
       for (unsigned j=sj; j<sj+blocking_factor && j<this->testsize; ++j) {
-        // cout << "Address " << c[i+j*test_size] << " i " << i << " j " << j << endl;
-        // if (c[i+j*test_size] > test_size*test_size*8*3)
-        //   cout << "Catch address (c) " << c[i+j*test_size] << endl;
         r0 = myCpu.loadDouble(c[i+j*test_size]);
         for (unsigned k=sk; k<sk+blocking_factor && k<this->testsize; ++k) {
-          // if (a[i+k*test_size] > test_size*test_size*8*3)
-          //   cout << "Catch address (a) " << a[i+k*test_size] << endl;
-          // cout << "Address " << a[i+k*test_size] << endl;
           r1 = myCpu.loadDouble(a[i+k*test_size]);
-          // if (b[k+j*test_size] > test_size*test_size*8*3)
-          //   cout << "Catch address (b) " << b[k+j*test_size] << endl;
-          // cout << "Address " << b[k+j*test_size] << endl;
           r2 = myCpu.loadDouble(b[k+j*test_size]);
           r3 = myCpu.multDouble(r1, r2);
           r0 = myCpu.addDouble(r0, r3);
         }
-        // cout << "Address " << c[i+j*test_size] << endl;
-        // if (c[i+j*test_size] > test_size*test_size*8*3)
-        //   cout << "Catch address (c) " << c[i+j*test_size] << endl;
         myCpu.storeDouble(c[i+j*test_size], r0);
       }
 }

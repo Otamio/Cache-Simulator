@@ -1,6 +1,11 @@
+/* ./src/Cache.cc
+ *
+ *  class Cache controls memory access of the ISA.
+ */
+
 #include "classes.hh"
 
-// Constructor function
+/* Constructor function */
 Cache::Cache(Parameters &p, Rule *r, Ram *rm, Result *resu) {
   // Determine Parameters
   numSets = p.getSetCount();
@@ -39,7 +44,7 @@ Cache::Cache(Parameters &p, Rule *r, Ram *rm, Result *resu) {
   result = resu;
 }
 
-// Display the memory contents in the cache
+/* Display the runtime memory contents in the cache */
 void Cache::show() {
   unsigned set_ct = 0;
   for (auto &s : this->blocks) {
@@ -53,21 +58,18 @@ void Cache::show() {
   cout << endl;
 }
 
-// Get the value from the address supplied (public member function)
+/* Get the value from the address supplied (public member function) */
 double Cache::getDouble(Address address) {
   // Find the data in the blocks
   DataBlock &target = this->findBlock(address, false);
   // Get the in-block index
   unsigned offset = this->rule->getBlockOffset(address);
 
-  // cout << "block_id " << block_id << endl;
-  // target.show();
-
   // Obtain the value from DataBlock
   return target.get(offset);
 }
 
-// Write the value to the given address
+/* Write the value to the given address */
 void Cache::setDouble(Address address, double value) {
   // Find the block
   DataBlock &target = this->findBlock(address, true);
@@ -78,38 +80,31 @@ void Cache::setDouble(Address address, double value) {
   target.set(offset, value);
   // Also update the value in the ram
   this->ram->setBlock(address, target);
-
-  // cout << "Address is " << address << endl;
-  // cout << "Offset is " << offset << endl;
-
-  // set the value
-  // this->setBlock(address, value);
 }
 
-// Search the block in the cache
+/* Search the block by the given Address in the cache,
+ * write indicates whether it is a read (false) or write (true)
+ */
 DataBlock &Cache::findBlock(Address address, bool write) {
   // get set_id
   unsigned set_id = this->rule->getSetIndex(address);
   // get tag
   unsigned tag = this->rule->getTag(address);
 
-  /* Iterate to find the matching record */
+  /* Iterate to find the -matching- record */
   unsigned block_id = 0;
 
   for (auto blkTag : this->tags[set_id]) {
-    // cout << "activate " << blkTag << " set " << set_id << endl;
+    // Linear search
     if (this->validBits[set_id][block_id] && blkTag == tag) {
       // New Block Found, record the state of block_id
       // Also Need to update the replacement queue when LRU is applied
       if (this->replacement_rule == 0) this->lru_queue.update(set_id, block_id);
+      // If found, simply break the for loop
       break;
     }
     ++block_id;
   }
-
-  // cout << "Find result " << "Address " << address;
-  // cout << " set_id " << set_id << " tag " << tag << " block_id " << block_id << endl;
-  // cout << this->numBlocks << endl;
 
   /* Record the hit/miss */
   if (block_id != this->numBlocks) {
@@ -133,14 +128,14 @@ DataBlock &Cache::findBlock(Address address, bool write) {
   // End of function
 }
 
-// Fetch the block from RAM if miss occurs
+/* Fetch the block from RAM if read/write miss occurs */
 DataBlock &Cache::updateBlock(Address address) {
   // get set_id
   unsigned set_id = this->rule->getSetIndex(address);
   // get the target block (that is moved from RAM)
   DataBlock &newblock = this->fetchBlock(address);
 
-  /* Iterate to find the empty block */
+  /* Iterate to find the -empty- block */
   unsigned block_id = 0;
 
   for (auto blkValidBit : this->validBits[set_id]) {
@@ -159,8 +154,6 @@ DataBlock &Cache::updateBlock(Address address) {
       else if (this->replacement_rule == 0)
         this->lru_queue.push(set_id, block_id);
 
-      // cout << "endl(2)" << block_id << endl;
-
       // Update complete, return the reference
       return this->blocks[set_id][block_id];
     }
@@ -171,6 +164,9 @@ DataBlock &Cache::updateBlock(Address address) {
   return this->replaceBlock(address);
 }
 
+/* Replace a block in Cache by the new block (supplied by the address),
+ * return the reference of the new block
+ */
 DataBlock &Cache::replaceBlock(Address address) {
   // get set_id
   unsigned set_id = this->rule->getSetIndex(address);
@@ -190,7 +186,6 @@ DataBlock &Cache::replaceBlock(Address address) {
   } else
     throw string("Unknow Replacement Method (Code: 003).\n");
 
-  // cout << set_id << " " << block_id << " " << this->blocks[set_id][block_id].getBlockSize() << endl;
   // Update the block
   this->blocks[set_id][block_id].replace(newblock);
   this->tags[set_id][block_id] = this->rule->getTag(address);
@@ -199,44 +194,7 @@ DataBlock &Cache::replaceBlock(Address address) {
   return this->blocks[set_id][block_id];
 }
 
-// void Cache::setBlock(Address address, double value) {
-//   // get the target Block, and fetch the block if it is not in the memory
-//   DataBlock &target_block = this->findBlock(address, true);
-//
-//   // get the offset
-//   unsigned block_id = this->rule->getBlockIndex(address);
-//
-//   // cout << "activated!! " << target_block.get(offset) << endl;
-//   target_block.show();
-//
-//   // Write the value both the cache and ram
-//   target_block.set(block_id, value);
-//
-//
-//   this->ram->setBlock(address, target_block); // replace the whole block
-// }
-
-// unsigned Cache::replaceFIFO(unsigned set_id) {
-//   unsigned ret = this->blockQueues[set_id].front();
-//   this->blockQueues[set_id].pop_front();
-//   return ret;
-// }
-//
-// unsigned Cache::replaceLRU(unsigned set_id) {
-//   unsigned ret = this->blockLists[set_id].back();
-//   this->blockLists[set_id].pop_back();
-//   // Find the map iterator, and remove the pair from map
-//   auto it = this->blockMaps[set_id].find(ret);
-//   this->blockMaps[set_id].erase(it);
-//   return ret;
-// }
-//
-// // Legacy code
-// void Cache::updateLRU(unsigned set_id, unsigned block_id) {
-//   return;
-// }
-
-// Reset (turn all validBits to false)
+/* Reset the cache (turn all validBits to false) */
 void Cache::reset() {
   for (auto &BitBlock : this->validBits)
     for (auto it=BitBlock.begin(); it!=BitBlock.end(); ++it)

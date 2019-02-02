@@ -2,7 +2,7 @@
 # Compiling Instructions
 ################################################################################
 CC= clang++
-CFLAGS= -Wall -g -O3 -o
+CFLAGS= -Wall -g -O3 -std=c++11 -o
 
 ################################################################################
 # Source codes, Object files, and temporary files
@@ -11,15 +11,29 @@ src= emulator.cc parameters.cc Rule.cc Ram.cc DataBlock.cc Cache.cc algorithm.cc
 # Library Modules
 lib_test= lib/lib_test.cc
 lib= $(filter-out $(lib_test), $(wildcard lib/*.cc))
-lib_exe= ./library_test
+# Source Files
+src= $(wildcard src/*.cc)
+# Executables
 exe= ./cache-sim
-exeflags= -r LRU -a mxm_block -d 400
+lib_exe= ./library_test
 
+################################################################################
+# Execution commands
+################################################################################
+# Execution flags
+exeflags= -r LRU -a mxm_block -d 400
 daxpyflags= -d 9 -a daxpy -p
 mxmflags= -d 3 -a mxm
 
+################################################################################
+# Compiling commands
+################################################################################
 all: main
 	#	$(exe) $(exeflags)
+
+# Produce the executable
+main: $(src) $(lib)
+	${CC} $(src) $(lib) ${CFLAGS} $(exe)
 
 test-lib: $(lib_test) $(lib)
 	${CC} $(lib_test) $(lib) ${CFLAGS} $(lib_exe)
@@ -80,9 +94,6 @@ test-replacement-policy:
 	$(exe) -r random
 	$(exe) -r FIFO
 	$(exe) -r LRU
-
-main: $(src)
-	${CC} $(src) ${CFLAGS} $(exe)
 
 clean:
 	rm -f $(exe) $(lib_exe)

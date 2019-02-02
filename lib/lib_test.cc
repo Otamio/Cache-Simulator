@@ -1,4 +1,5 @@
-/* The test file for the library */
+/* ./lib/lib_test.cc
+ * The test file for the library */
 
 #define TEST_SIZE 3
 #define TEST_ARRAY 10

@@ -1,3 +1,11 @@
+/* ./src/parameters.cc
+ *
+ *  class Parameters records all the information needed from commandline arguments,
+ *    it has to be initialized before the function calls algorithm class methods.
+ *
+ *  This file also includes two methods of the class Result.
+ */
+
 #define PRECISION_DOUBLE 1
 
 #include <iostream>
@@ -39,7 +47,7 @@ Parameters::Parameters(int argc, char *argv[]) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "c:b:n:r:a:d:pf:")) != -1) {
+  while ((c = getopt(argc, argv, "c:b:n:r:a:d:pf:s")) != -1) {
     switch (c) {
       case 'c':
         // read size of cache
@@ -73,6 +81,9 @@ Parameters::Parameters(int argc, char *argv[]) {
         // read in the blocking factor
         blocking_factor = atoi(optarg);
         break;
+      case 's':
+        reset = true;
+        break;
     // end of switch
     }
   // end of while (commandline arguments)
@@ -101,7 +112,7 @@ ostream &print(ostream &os, const Result &result) {
   return os;
 }
 
-/* Set all field values to 0 */
+/* Restting the result: Set all field values to 0 */
 void Result::reset() {
   this->instruction_count = 0;
   this->read_hits = 0;
@@ -109,60 +120,3 @@ void Result::reset() {
   this->write_hits = 0;
   this->write_misses = 0;
 }
-
-// Parameters &Parameters::read(int argc, char *argv[]) {
-//   extern char *optarg;
-//   extern int optind, opterr, optopt;
-//
-//   int c;
-//
-//   while ((c = getopt(argc, argv, "c:b:n:r:a:d:pf:")) != -1) {
-//     switch (c) {
-//       case 'c':
-//         // read size of cache
-//         this->cache_size = atoi(optarg);
-//         break;
-//       case 'b':
-//         // read size of data block
-//         this->block_size = atoi(optarg);
-//         break;
-//       case 'n':
-//         // read associativity
-//         this->n_map = atoi(optarg);
-//         break;
-//       case 'r':
-//         // read replacement policy
-//         this->replacement_policy = string(optarg);
-//         break;
-//       case 'a':
-//         // read the algorithm to simulate
-//         this->algorithm = string(optarg);
-//         break;
-//       case 'd':
-//         // read in the dimension
-//         this->dimension = atoi(optarg);
-//         break;
-//       case 'p':
-//         // enables the printing of the output matrix
-//         this->output = true;
-//         break;
-//       case 'f':
-//         // read in the blocking factor
-//         this->blocking_factor = atoi(optarg);
-//         break;
-//     // end of switch
-//     }
-//   // end of while (commandline arguments)
-//   }
-//
-//   return *this;
-// }
-
-// // Initialize the static variables of class Address
-// void Parameters::initialize_address() {
-//   unsigned Address::block_size = this->block_size;
-//   Address::set_size = this->n_sets;
-//   Address::offset_len = this->getBit(Address::block_size);
-//   Address::index_len = this->getBit(Address::set_size);
-//   Address::tag_len = ADDRESS_LEN - Address::offset_len - Address::index_len;
-// }
