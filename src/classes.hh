@@ -97,7 +97,7 @@ public:
   inline unsigned getTestSize() const { return this->dimension; }
   inline unsigned getBlockingFactor() const { return this->blocking_factor; }
   inline bool printOutput() const { return this->output; }
-  inline bool resetResult() const { return this->reset; }
+  inline bool resetResult() const { return !this->load; }
   inline string &getReplacePolicy() { return this->replacement_policy; }
   inline string &getAlgorithm() { return this->algorithm; }
 private:
@@ -107,7 +107,7 @@ private:
   string replacement_policy = "LRU";
   string algorithm = "mxm_block";
   unsigned dimension = 480u, blocking_factor = 32u;
-  bool output = false, reset=false;
+  bool output = false, load=false;
 };
 /* Print the parameters to stdout */
 ostream &print(ostream &os, const Parameters &p);

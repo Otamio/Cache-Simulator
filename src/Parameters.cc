@@ -47,7 +47,7 @@ Parameters::Parameters(int argc, char *argv[]) {
 
   int c;
 
-  while ((c = getopt(argc, argv, "c:b:n:r:a:d:pf:s")) != -1) {
+  while ((c = getopt(argc, argv, "c:b:n:r:a:d:pf:l")) != -1) {
     switch (c) {
       case 'c':
         // read size of cache
@@ -81,8 +81,8 @@ Parameters::Parameters(int argc, char *argv[]) {
         // read in the blocking factor
         blocking_factor = atoi(optarg);
         break;
-      case 's':
-        reset = true;
+      case 'l':
+        load = true;
         break;
     // end of switch
     }

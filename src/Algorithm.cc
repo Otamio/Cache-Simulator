@@ -4,6 +4,7 @@
  */
 
 #include "classes.hh"
+#include <iomanip>
 
 /* Start Function */
 void Algorithms::enter(Parameters &params) {
@@ -23,7 +24,7 @@ void Algorithms::enter(Parameters &params) {
   this->cache = &cache;
 
   /* Go to the algorithm */
-  if (params.getAlgorithm() == "mxm_block")
+  if (params.getAlgorithm() == "mxm_block" || params.getAlgorithm() == "mxm_blocked")
     this->mxmMultBlock(params);
   else if (params.getAlgorithm() == "mxm")
     this->mxmMult(params);
@@ -147,14 +148,11 @@ void Algorithms::mxmMult(Parameters &params) {
     for (auto col=0; col!=test_size; ++col) {
       r0 = 0; // r0 is the accumulator;
       for (auto k=0; k!=test_size; ++k) {
-        // cout << "get(a)" << endl;
         r1 = myCpu.loadDouble(a[row*test_size + k]);
-        // cout << "get(b)" << endl;
         r2 = myCpu.loadDouble(b[k*test_size + col]);
         r3 = myCpu.multDouble(r1, r2);
         r0 = myCpu.addDouble(r0, r3);
       }
-      // cout << "get(c)" << endl;
       myCpu.storeDouble(c[row*test_size+col], r0);
     }
   }
@@ -169,21 +167,21 @@ void Algorithms::mxmMult(Parameters &params) {
     cout << "Matrix A:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(a[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(a[ri*test_size+ci]) << " ";
       cout << "\n";
     }
 
     cout << "Matrix B:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(b[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(b[ri*test_size+ci]) << " ";
       cout << "\n";
     }
 
     cout << "Matrix C:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(c[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(c[ri*test_size+ci]) << " ";
       cout << "\n";
     }
   }
@@ -246,21 +244,21 @@ void Algorithms::mxmMultBlock(Parameters &params) {
     cout << "Matrix A:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(a[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(a[ri*test_size+ci]) << " ";
       cout << "\n";
     }
 
     cout << "Matrix B:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(b[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(b[ri*test_size+ci]) << " ";
       cout << "\n";
     }
 
     cout << "Matrix C:\n";
     for (auto ri=0; ri!=test_size; ++ri) {
       for (auto ci=0; ci!=test_size; ++ci)
-        cout << myCpu.loadDouble(c[ri*test_size+ci]) << " ";
+        cout << fixed << setprecision(0) << myCpu.loadDouble(c[ri*test_size+ci]) << " ";
       cout << "\n";
     }
   }
